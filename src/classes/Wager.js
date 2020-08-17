@@ -1,3 +1,5 @@
+import colors from 'colors';
+
 export default class Wager
 {
     client;
@@ -16,28 +18,26 @@ export default class Wager
 
     requestGrimoire()
     {
-        console.log('sleeping 3 seconds');
         this._sleep(3000);
 
         // send the !grimoire command
-        console.log('sending !grimoire');
+        console.log('Sending !grimoire...'.gray);
         this.client.say(this.channel, "!grimoire");
     }
 
     setGrimoireWager(grimoire_array)
     {
-        console.log('calculating grimoire');
+        console.log("Calculating grimoire...\n".gray);
         this.grimoire = Number(grimoire_array[0]);
         this.wager = Math.floor(this.grimoire * 0.20);
 
-        console.log("Total Grimoire: " + this.grimoire);
-        console.log("Wagering: " + this.wager);
+        console.log(colors.green("Total Grimoire: " + this.grimoire));
+        console.log(colors.green("Wagering: " + this.wager + "\n"));
         this.raid_ready = true;
     }
 
     joinRaid()
     {
-        console.log('sleeping 7 seconds\n\n');
         this._sleep(7000);
 
         var command_to_send = "!raid " + this.wager;
@@ -53,6 +53,7 @@ export default class Wager
 
     _sleep(milliseconds)
     {
+        console.log(colors.gray('Sleeping ' + milliseconds + " milliseconds...\n"));
         const date = Date.now();
         let currentDate = null;
         do {
