@@ -1,0 +1,17 @@
+{
+  "name": "grimoire-bot",
+  "version": "0.0.1",
+  "description": "A Twitch Chat bot to steal as much grimoire from twitch.tv/leopard as possible",
+  "main": "src",
+  "scripts": {
+    "start": "node .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ethan Beyer",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "esm": "^3.2.25",
+    "tmi.js": "^1.5.0"
+  }
+}
