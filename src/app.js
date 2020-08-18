@@ -52,8 +52,8 @@ client.on("connected", (address, port) => {
             }
 
             if(wager.grimoire > 10) {
-                console.log('Joining the raid...'.green);
                 wager.joinRaid();
+                console.log('Joining the raid...'.green);
             }
 
             wager.reset();
@@ -61,7 +61,12 @@ client.on("connected", (address, port) => {
 
         // dump loot message
         if(message.includes(Configs.USERNAME) && message.includes("loot")) {
-            console.log("\n" + message + "\n".red);
+            console.log(colors.blue.bold("\n" + message + "\n"));
+        }
+
+        // dump loot message
+        if(!message.includes(Configs.USERNAME) && message.includes("loot")) {
+            console.log(colors.red("\n" + message + "\n"));
         }
     });
 
