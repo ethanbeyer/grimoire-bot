@@ -27,9 +27,10 @@ client.connect();
 
 // Run the following listeners on a server that's actually connected...
 client.on("connected", (address, port) => {
-    let counter = 1;
     console.clear();
     console.log("Starting a dead horse...".gray);
+
+    let counter = 1;
 
     // set up the Wager, request the grimoire our account has
     let wager = new Wager(client, Configs.CHANNEL, Configs.USERNAME);
@@ -42,12 +43,23 @@ client.on("connected", (address, port) => {
 
     // Message Listeners
     client.on('message', (channel, tags, message, self) => {
+
         // Ignore echoed messages.
         if(self) return;
 
+        // Logging from MOD_USERNAME
+        if(tags.username.toLowerCase() === Configs.MOD_USERNAME && message.includes(Configs.USERNAME)) {
+            console.log(`${message}`.blue);
+        }
+
+        // Some QoL information
+        if(/We need to sit in orbit for \d minutes before we can raid again/.test(message)) {
+            console.log(colors.magenta(message));
+        }
+
         // the raid is open
         if(message == "Looks like the Cabal have given up the search ... the raid is open!") {
-            console.log(colors.magenta(`\n${counter++}`));
+            console.log(colors.magenta(`\n${counter}`));
             console.log("The raid is open...");
 
             if(counter % 3 === 0) {
@@ -72,16 +84,13 @@ client.on("connected", (address, port) => {
 
                 }, 5000);
             }
+
+            counter++;
         }
 
         // look for messages about our grimoire total
         if(/Grimoire :/.test(message) && message.includes(Configs.USERNAME)) {
             wager.prepare(message);
-        }
-
-        // Some QoL information
-        if(/We need to sit in orbit for \d minutes before we can raid again/.test(message)) {
-            console.log(colors.magenta(message));
         }
     });
 
