@@ -1,2 +1,13 @@
+# Environment
 .env
+
+# Packages
 node_modules/
+
+# Dev
+@todo
+.idea
+.dev
+
+# Data
+/data

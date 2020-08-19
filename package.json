@@ -1,6 +1,6 @@
 {
   "name": "grimoire-bot",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "A Twitch Chat bot to steal as much grimoire from twitch.tv/leopard as possible",
   "main": "src",
   "scripts": {
@@ -12,6 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "colors": "^1.4.0",
+    "csv-append": "^1.0.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "tmi.js": "^1.5.0"

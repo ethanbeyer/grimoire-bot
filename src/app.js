@@ -4,6 +4,7 @@ import colors from 'colors';
 import * as Configs from './configs';
 import Wager from './classes/Wager';
 
+
 // Client Configs
 var client_options = {
     options: { debug: false },
@@ -13,60 +14,73 @@ var client_options = {
     },
     identity: {
         username: Configs.USERNAME,
-        password: Configs.TOKEN
+        password: Configs.OAUTH_TOKEN
     },
     channels: [ Configs.CHANNEL ]
 };
+
 
 // Connect to the Client
 const client = new tmi.Client(client_options);
 client.connect();
 
+
 // Run the following listeners on a server that's actually connected...
 client.on("connected", (address, port) => {
-
+    let counter = 0;
     console.log("Starting a dead horse...".gray);
-    client.say(Configs.CHANNEL, "!raid 1");
 
     // set up the Wager, request the grimoire our account has
     let wager = new Wager(client, Configs.CHANNEL, Configs.USERNAME);
+
+    // start off by saying this...
+    // It's important because it forces the Cabal message to come back around if chat has been dead.
+    setTimeout(() => {
+        client.say(Configs.CHANNEL, '!raid 1')
+    }, 1000);
 
     // Message Listeners
     client.on('message', (channel, tags, message, self) => {
         // Ignore echoed messages.
         if(self) return;
 
-        // Chat message that starts the process
+        // the raid is open
         if(message == "Looks like the Cabal have given up the search ... the raid is open!") {
-            console.log('The raid is open...'.green);
-            wager.requestGrimoire();
+            console.log(colors.magenta(`\n${counter++}`));
+            console.log("The raid is open...");
+
+            // 5 seconds after "Looks like..." run this...
+            setTimeout(() =>
+            {
+                client.say(Configs.CHANNEL, '!grimoire');
+
+                // and then 3.5 seconds after that, run the raid command.
+                // this gives time for the grimoire processing and so forth.
+                setTimeout(() =>
+                {
+                    if(wager.grimoire > 60) {
+                        // this could fail. that doesn't matter: the next time the raid is open the loop starts over.
+                        // do it 3 seconds after the Cabal message.
+                        console.log('Joining the raid...'.gray);
+                        this.client.say(Configs.CHANNEL, `!raid ${wager.wager}`);
+                    } else {
+                        console.log('Too poor to raid... :('.red);
+                    }
+
+                    wager.reset();
+                }, 3500);
+
+            }, 5000);
         }
 
-        // next stage, we look for messages about our grimoire total
+        // look for messages about our grimoire total
         if(/Grimoire :/.test(message) && message.includes(Configs.USERNAME)) {
-            console.log('Grimoire command found...'.green);
-            var grimoire_matches = message.match(/(\d{1,})/);
-
-            if(grimoire_matches) {
-                wager.setGrimoireWager(grimoire_matches);
-            }
-
-            if(wager.grimoire > 10) {
-                wager.joinRaid();
-                console.log('Joining the raid...'.green);
-            }
-
-            wager.reset();
+            wager.prepare(message);
         }
 
-        // dump loot message
-        if(message.includes(Configs.USERNAME) && message.includes("loot")) {
-            console.log(colors.blue.bold("\n" + message + "\n"));
-        }
-
-        // dump loot message
-        if(!message.includes(Configs.USERNAME) && message.includes("loot")) {
-            console.log(colors.red("\n" + message + "\n"));
+        // Some QoL information
+        if(/We need to sit in orbit for \d minutes before we can raid again/.test(message)) {
+            console.log(colors.magenta(message));
         }
     });
 
