@@ -8,7 +8,6 @@ export default class Wager
     {
         this.previous_grimoire = 0;
         this.grimoire = 0;
-        this.difference = 0;
         this.wager;
         this.date;
 
@@ -37,14 +36,11 @@ export default class Wager
 
         this.wager = Math.floor(this.grimoire * percentage_as_decimal);
 
-        this.difference = (this.previous_grimoire > 0) ? this.grimoire - this.previous_grimoire : 0;
-
         this._logToCSV({
-            "Date":             this.date,
-            "Grimoire":         this.grimoire,
-            "Wager":            this.wager,
-            "Wager Percentage": `${percentage_as_integer}%`,
-            "Difference":       this.difference
+            "Date":            this.date,
+            "Grimoire":        this.grimoire,
+            "Wager":           this.wager,
+            "WagerPercentage": `${percentage_as_integer}%`
         });
 
         console.log(colors.green(`Total Grimoire: ${this.grimoire}`));
@@ -56,12 +52,6 @@ export default class Wager
         console.log("Resetting...".gray);
         this.date = '';
         this.wager = '';
-        this.difference = 0;
-
-        var minutes_to_sleep = this._getRandomIntInclusive(5, 20);
-
-        console.log(colors.gray(`Sleeping for ${minutes_to_sleep} minutes...`));
-        this._sleep(this._convertTime(minutes_to_sleep, 'minutes'));
     }
 
 

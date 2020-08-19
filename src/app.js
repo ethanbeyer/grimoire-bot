@@ -27,7 +27,7 @@ client.connect();
 
 // Run the following listeners on a server that's actually connected...
 client.on("connected", (address, port) => {
-    let counter = 0;
+    let counter = 1;
     console.clear();
     console.log("Starting a dead horse...".gray);
 
@@ -50,28 +50,28 @@ client.on("connected", (address, port) => {
             console.log(colors.magenta(`\n${counter++}`));
             console.log("The raid is open...");
 
-            // 5 seconds after "Looks like..." run this...
-            setTimeout(() =>
-            {
-                client.say(Configs.CHANNEL, '!grimoire');
-
-                // and then 3.5 seconds after that, run the raid command.
-                // this gives time for the grimoire processing and so forth.
+            if(counter % 3 === 0) {
+                console.log('Safety wager...'.gray);
+                client.say(Configs.CHANNEL, '!raid 21');
+            } else {
+                // 5 seconds after "Looks like..." run this...
                 setTimeout(() =>
                 {
-                    if(wager.grimoire > 60) {
-                        // this could fail. that doesn't matter: the next time the raid is open the loop starts over.
+                    client.say(Configs.CHANNEL, '!grimoire');
+
+                    // and then 3.5 seconds after that, run the raid command.
+                    // this gives time for the grimoire processing and so forth.
+                    setTimeout(() =>
+                    {
+                        // this can fail. that doesn't matter: the next time the raid is open the loop starts over.
                         // do it 3 seconds after the Cabal message.
                         console.log('Joining the raid...'.gray);
                         client.say(Configs.CHANNEL, `!raid ${wager.wager}`);
-                    } else {
-                        console.log('Too poor to raid... :('.red);
-                    }
+                        wager.reset();
+                    }, 3500);
 
-                    wager.reset();
-                }, 3500);
-
-            }, 5000);
+                }, 5000);
+            }
         }
 
         // look for messages about our grimoire total
