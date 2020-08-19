@@ -59,6 +59,8 @@ export default class Wager
         this.difference = 0;
 
         var minutes_to_sleep = this._getRandomIntInclusive(5, 20);
+
+        console.log(colors.gray(`Sleeping for ${minutes_to_sleep} minutes...`));
         this._sleep(this._convertTime(minutes_to_sleep, 'minutes'));
     }
 
@@ -70,9 +72,12 @@ export default class Wager
         CSV(Configs.CSV_PATH, true).append(log_data);
     }
 
-    _sleep(milliseconds)
+    _sleep(milliseconds, show_message = false)
     {
-        console.log(colors.gray(`Sleeping ${milliseconds} milliseconds...`));
+        if(show_message) {
+            console.log(colors.gray(`Sleeping ${milliseconds} milliseconds...`));
+        }
+
         const date = Date.now();
         let currentDate = null;
         do {

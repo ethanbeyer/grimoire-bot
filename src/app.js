@@ -28,6 +28,7 @@ client.connect();
 // Run the following listeners on a server that's actually connected...
 client.on("connected", (address, port) => {
     let counter = 0;
+    console.clear();
     console.log("Starting a dead horse...".gray);
 
     // set up the Wager, request the grimoire our account has
@@ -62,7 +63,7 @@ client.on("connected", (address, port) => {
                         // this could fail. that doesn't matter: the next time the raid is open the loop starts over.
                         // do it 3 seconds after the Cabal message.
                         console.log('Joining the raid...'.gray);
-                        this.client.say(Configs.CHANNEL, `!raid ${wager.wager}`);
+                        client.say(Configs.CHANNEL, `!raid ${wager.wager}`);
                     } else {
                         console.log('Too poor to raid... :('.red);
                     }
