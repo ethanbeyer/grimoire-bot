@@ -1,9 +1,12 @@
-// Environment Loading
+// Env
 require('dotenv').config();
 
-// Timestamps
-// require('log-timestamp');
+// Logging Improvements
+require('log-timestamp');
 
-// ESM? I don't know...
-require = require("esm")(module/*, options*/);
-module.exports = require("./app.js");
+// ESM
+require = require("esm")(module);
+
+// Which step are we loading?
+let file_to_load = process.argv[2];
+require(`./${file_to_load}`);

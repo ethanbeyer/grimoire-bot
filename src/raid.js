@@ -62,28 +62,23 @@ client.on("connected", (address, port) => {
             console.log(colors.magenta(`\n${counter}`));
             console.log("The raid is open...");
 
-            if(counter % 3 === 0) {
-                console.log('Safety wager...'.gray);
-                client.say(Configs.CHANNEL, '!raid 21');
-            } else {
-                // 5 seconds after "Looks like..." run this...
+            // 5 seconds after "Looks like..." run this...
+            setTimeout(() =>
+            {
+                client.say(Configs.CHANNEL, '!grimoire');
+
+                // and then 3.5 seconds after that, run the raid command.
+                // this gives time for the grimoire processing and so forth.
                 setTimeout(() =>
                 {
-                    client.say(Configs.CHANNEL, '!grimoire');
+                    console.log('Joining the raid...'.gray);
 
-                    // and then 3.5 seconds after that, run the raid command.
-                    // this gives time for the grimoire processing and so forth.
-                    setTimeout(() =>
-                    {
-                        // this can fail. that doesn't matter: the next time the raid is open the loop starts over.
-                        // do it 3 seconds after the Cabal message.
-                        console.log('Joining the raid...'.gray);
-                        client.say(Configs.CHANNEL, `!raid ${wager.wager}`);
-                        wager.reset();
-                    }, 3500);
+                    var amount_to_wager = (counter % 3 > 0) ? wager.wager : 21;
+                    client.say(Configs.CHANNEL, `!raid ${amount_to_wager}`);
+                    wager.reset();
+                }, 20000);
 
-                }, 5000);
-            }
+            }, 5000);
 
             counter++;
         }
@@ -92,6 +87,7 @@ client.on("connected", (address, port) => {
         if(/Grimoire :/.test(message) && message.includes(Configs.USERNAME)) {
             wager.prepare(message);
         }
+
     });
 
 });
