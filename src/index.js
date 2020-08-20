@@ -1,9 +1,6 @@
 // Env
 require('dotenv').config();
 
-// Logging Improvements
-require('log-timestamp');
-
 // ESM
 require = require("esm")(module);
 

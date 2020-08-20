@@ -1,3 +1,6 @@
+// Logging Improvements
+require('log-timestamp');
+
 // Imports
 import tmi from 'tmi.js';
 import colors from 'colors';

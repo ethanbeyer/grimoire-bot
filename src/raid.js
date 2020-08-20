@@ -75,6 +75,13 @@ client.on("connected", (address, port) => {
 
                     var amount_to_wager = (counter % 3 > 0) ? wager.wager : 21;
                     client.say(Configs.CHANNEL, `!raid ${amount_to_wager}`);
+
+                    wager._logToCSV({
+                        "Date":     wager.date,
+                        "Grimoire": wager.grimoire,
+                        "Wager":    amount_to_wager
+                    });
+
                     wager.reset();
                 }, 20000);
 

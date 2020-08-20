@@ -21,7 +21,7 @@ export default class Wager
     {
         console.log("Calculating grimoire from message...".gray);
 
-        var rule = /Grimoire : (?<total>\d{1,}(,\d{1,})?(,\d{1,})?) /;
+        var rule = /Grimoire : (?<total>\d{1,3}(,\d{3})?(,\d{3})?(,\d{3})?) /;
         var grimoire_regex_matches = message.match(rule);
         var total_with_commas = grimoire_regex_matches['groups'].total;
 
@@ -35,13 +35,6 @@ export default class Wager
         this.grimoire = Number(total_with_commas.replace(/,/g, ''));
 
         this.wager = Math.floor(this.grimoire * percentage_as_decimal);
-
-        this._logToCSV({
-            "Date":            this.date,
-            "Grimoire":        this.grimoire,
-            "Wager":           this.wager,
-            "WagerPercentage": `${percentage_as_integer}%`
-        });
 
         console.log(colors.green(`Total Grimoire: ${this.grimoire}`));
         console.log(colors.green(`Wagering ${percentage_as_integer}% : ${this.wager}`));
@@ -57,7 +50,7 @@ export default class Wager
 
     _logToCSV(log_data)
     {
-        console.log("Doing some reporting...".gray);
+        console.log("Saving to CSV...".gray);
         console.log(log_data);
         CSV(Configs.CSV_PATH, true).append(log_data);
     }
