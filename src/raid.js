@@ -3,98 +3,112 @@ import tmi from 'tmi.js';
 import colors from 'colors';
 import * as Configs from './configs';
 import Wager from './classes/Wager';
-
-
-// Client Configs
-var client_options = {
-    options: { debug: false },
-    connection: {
-        secure: true,
-        reconnect: true
-    },
-    identity: {
-        username: Configs.USERNAME,
-        password: Configs.OAUTH_TOKEN
-    },
-    channels: [ Configs.CHANNEL ]
-};
-
+import Tracker from './classes/Tracker';
+import Logger from './classes/Logger';
 
 // Connect to the Client
-const client = new tmi.Client(client_options);
+const client = new tmi.Client(Configs.TMI_CONFIGS);
 client.connect();
 
+// set up the Wager, request the grimoire our account has
+const wager = new Wager(client, Configs.CHANNEL, Configs.USERNAME);
+const trk = new Tracker();
+const logger = new Logger();
 
 // Run the following listeners on a server that's actually connected...
 client.on("connected", (address, port) => {
     console.clear();
     console.log("Starting a dead horse...".gray);
 
-    let counter = 1;
-
-    // set up the Wager, request the grimoire our account has
-    let wager = new Wager(client, Configs.CHANNEL, Configs.USERNAME);
-
     // start off by saying this...
     // It's important because it forces the Cabal message to come back around if chat has been dead.
     setTimeout(() => {
-        client.say(Configs.CHANNEL, '!raid 1')
+        client.say(Configs.CHANNEL, '!raid 1');
     }, 1000);
+});
 
-    // Message Listeners
-    client.on('message', (channel, tags, message, self) => {
+// Message Listeners
+client.on('message', (channel, tags, message, self) => {
 
-        // Ignore echoed messages.
-        if(self) return;
+    var from_mod_bot = tags.username.toLowerCase() === Configs.MOD_USERNAME,
+        mentions_me = message.includes(Configs.USERNAME);
 
-        // Logging from MOD_USERNAME
-        if(tags.username.toLowerCase() === Configs.MOD_USERNAME && message.includes(Configs.USERNAME)) {
-            console.log(`${message}`.blue);
+    // Logging from MOD_USERNAME to ME
+    if(from_mod_bot && mentions_me) {
+        console.log(`${message}`.blue);
+    }
+
+    // the raid is open
+    if(message == "Looks like the Cabal have given up the search ... the raid is open!") {
+        console.log(colors.magenta(`\n${trk.cycles}`));
+        console.log("The raid is open...");
+
+        // 5 seconds after "Looks like..." run this...
+        setTimeout(() => {
+            client.say(Configs.CHANNEL, '!grimoire');
+
+            // and then 3.5 seconds after that, run the raid command.
+            // this gives time for the grimoire processing and so forth.
+            setTimeout(() => {
+                console.log('Joining the raid...'.gray);
+                client.say(Configs.CHANNEL, `!raid ${wager.wager}`);
+            }, 20000);
+
+        }, 5000);
+    }
+
+    // look for messages about our grimoire total
+    if(/Grimoire :/.test(message) && mentions_me) {
+        var wager_override = (trk.cycles % 3 > 0) ? false : 21;
+        wager.prepare(message, wager_override);
+    }
+
+    // This is a solid message we can count on to increase the cycle count
+    if(/is planning to raid/.test(message) && from_mod_bot) {
+        console.log("Looks like someone is getting the raid started...".gray);
+        trk.waiting_for_result = 1;
+        return;
+    }
+
+    // Raid Wrap-up
+    if(trk.waiting_for_result && from_mod_bot) {
+
+        if(/The raid loot drops:/.test(message)) {
+            mentions_me ? trk.win() : trk.loss();
+        } else if(/executed the raid flawlessly/.test(message) && mentions_me) {
+            trk.win();
+        } else if(/We lootless af rn/.test(message)) {
+            trk.loss();
+        } else if(/wiped dat ass/.test(message) && mentions_me) {
+            trk.loss();
+        } else {
+            return;
         }
 
-        // Some QoL information
-        if(/We need to sit in orbit for \d minutes before we can raid again/.test(message)) {
-            console.log(colors.magenta(message));
+        console.log(trk);
+
+        if(trk.done) {
+            // Handle Streaks
+            if((trk.win_streak || trk.loss_streak) === 2) {
+                console.log("Sleeping for 7 minutes due to the current streak...");
+                trk.resetStreaks();
+                wager._sleep(wager._convertTime(7, 'minutes'));
+            }
+
+            // stop waiting for a result - we got it, we got it...!
+            logger.logToCSV({
+                "Date":     wager.date,
+                "Grimoire": wager.grimoire,
+                "Wager":    wager.wager
+            });
+
+            // Tell user what happened
+            var result = trk.result ? "WON! :)" : "LOST. :(";
+            var result_color = trk.result ? "green" : "red";
+            console.log(colors[result_color](`It looooooks like you ${result}`));
+
+            trk.cycle();
+            wager.reset();
         }
-
-        // the raid is open
-        if(message == "Looks like the Cabal have given up the search ... the raid is open!") {
-            console.log(colors.magenta(`\n${counter}`));
-            console.log("The raid is open...");
-
-            // 5 seconds after "Looks like..." run this...
-            setTimeout(() =>
-            {
-                client.say(Configs.CHANNEL, '!grimoire');
-
-                // and then 3.5 seconds after that, run the raid command.
-                // this gives time for the grimoire processing and so forth.
-                setTimeout(() =>
-                {
-                    console.log('Joining the raid...'.gray);
-
-                    var amount_to_wager = (counter % 3 > 0) ? wager.wager : 21;
-                    client.say(Configs.CHANNEL, `!raid ${amount_to_wager}`);
-
-                    wager._logToCSV({
-                        "Date":     wager.date,
-                        "Grimoire": wager.grimoire,
-                        "Wager":    amount_to_wager
-                    });
-
-                    wager.reset();
-                }, 20000);
-
-            }, 5000);
-
-            counter++;
-        }
-
-        // look for messages about our grimoire total
-        if(/Grimoire :/.test(message) && message.includes(Configs.USERNAME)) {
-            wager.prepare(message);
-        }
-
-    });
-
+    }
 });

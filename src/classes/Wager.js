@@ -1,6 +1,5 @@
 import colors from 'colors';
 import * as Configs from '../configs';
-import {csvAppend as CSV} from 'csv-append';
 
 export default class Wager
 {
@@ -17,7 +16,7 @@ export default class Wager
         this.username = username;
     }
 
-    prepare(message)
+    prepare(message, wager_override = false)
     {
         console.log("Calculating grimoire from message...".gray);
 
@@ -36,23 +35,20 @@ export default class Wager
 
         this.wager = Math.floor(this.grimoire * percentage_as_decimal);
 
-        console.log(colors.green(`Total Grimoire: ${this.grimoire}`));
+        console.log(colors.green(`Total Grimoire: ${total_with_commas}`));
         console.log(colors.green(`Wagering ${percentage_as_integer}% : ${this.wager}`));
+
+        if(wager_override) {
+            console.log(`JK, using an override of ${wager_override}...`.gray);
+            this.wager = wager_override;
+        }
     }
 
     reset()
     {
-        console.log("Resetting...".gray);
+        console.log("Resetting Wager...".gray);
         this.date = '';
         this.wager = '';
-    }
-
-
-    _logToCSV(log_data)
-    {
-        console.log("Saving to CSV...".gray);
-        console.log(log_data);
-        CSV(Configs.CSV_PATH, true).append(log_data);
     }
 
     _sleep(milliseconds, show_message = false)
