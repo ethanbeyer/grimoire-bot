@@ -8,6 +8,7 @@ export default class Wager
         this.previous_grimoire = 0;
         this.grimoire = 0;
         this.wager;
+        this.wager_override = 0;
         this.date;
 
         // this last in logs
@@ -16,7 +17,7 @@ export default class Wager
         this.username = username;
     }
 
-    prepare(message, wager_override = false)
+    prepare(message)
     {
         console.log("Calculating grimoire from message...".gray);
 
@@ -38,9 +39,9 @@ export default class Wager
         console.log(colors.green(`Total Grimoire: ${total_with_commas}`));
         console.log(colors.green(`Wagering ${percentage_as_integer}% : ${this.wager}`));
 
-        if(wager_override) {
-            console.log(`JK, using an override of ${wager_override}...`.gray);
-            this.wager = wager_override;
+        if(this.wager_override) {
+            console.log(`JK, using an override of ${this.wager_override}...`.gray);
+            this.wager = this.wager_override;
         }
     }
 
@@ -49,6 +50,7 @@ export default class Wager
         console.log("Resetting Wager...".gray);
         this.date = '';
         this.wager = '';
+        this.wager_override = 0;
     }
 
     _sleep(milliseconds, show_message = false)
