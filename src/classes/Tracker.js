@@ -1,3 +1,5 @@
+import colors from 'colors';
+
 export default class Tracker
 {
     constructor()
@@ -17,7 +19,9 @@ export default class Tracker
         this.cycles++;
         this.done = 0;
         this.result = 0;
-        this.waiting_for_result = 0
+        this.waiting_for_result = 0;
+        console.log(colors.green(`Winning Steak: ${this.win_streak}`));
+        console.log(colors.red(`Losing Streak: ${this.loss_streak}`));
     }
 
     win()
@@ -26,6 +30,7 @@ export default class Tracker
         this.done = 1;
         this.win_count++;
         this.win_streak++;
+        this.loss_streak = 0;
     }
 
     loss()
@@ -34,10 +39,12 @@ export default class Tracker
         this.done = 1;
         this.loss_count++;
         this.loss_streak++;
+        this.win_streak = 0;
     }
 
     resetStreaks()
     {
+        console.log("Resetting Streaks...".gray);
         this.win_streak = 0;
         this.loss_streak = 0;
     }

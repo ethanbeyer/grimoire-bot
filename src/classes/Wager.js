@@ -34,14 +34,14 @@ export default class Wager
         if(this.grimoire > 0) this.previous_grimoire = this.grimoire;
         this.grimoire = Number(total_with_commas.replace(/,/g, ''));
 
-        this.wager = Math.floor(this.grimoire * percentage_as_decimal);
-
         console.log(colors.green(`Total Grimoire: ${total_with_commas}`));
-        console.log(colors.green(`Wagering ${percentage_as_integer}% : ${this.wager}`));
 
         if(this.wager_override) {
-            console.log(`JK, using an override of ${this.wager_override}...`.gray);
             this.wager = this.wager_override;
+            console.log(`Override Wager: ${this.wager_override}`.green);
+        } else {
+            this.wager = Math.floor(this.grimoire * percentage_as_decimal);
+            console.log(colors.green(`Wagering ${percentage_as_integer}% : ${this.wager}`));
         }
     }
 

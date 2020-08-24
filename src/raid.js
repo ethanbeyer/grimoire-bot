@@ -59,7 +59,6 @@ client.on('message', (channel, tags, message, self) => {
 
     // look for messages about our grimoire total
     if(/Grimoire :/.test(message) && mentions_me) {
-        wager.wager_override = (trk.cycles % 3 > 0) ? false : 21;
         wager.prepare(message);
     }
 
@@ -107,7 +106,7 @@ client.on('message', (channel, tags, message, self) => {
             wager.reset();
 
             // Handle Streaks
-            if((trk.win_streak || trk.loss_streak) === 2) {
+            if(trk.win_streak >= 2 || trk.loss_streak >= 2) {
                 trk.resetStreaks();
                 wager.wager_override = 9;
             }
