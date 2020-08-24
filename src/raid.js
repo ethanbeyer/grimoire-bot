@@ -15,6 +15,12 @@ const wager = new Wager(client, Configs.CHANNEL, Configs.USERNAME);
 const trk = new Tracker();
 const logger = new Logger();
 
+// `npm run raid [anything_after_that]`
+// by default, we start by sending "!raid 1" in order to make sure that the mod_bot's
+// game cycle has started. But by passing any argument after `raid`, you can turn off
+// this functionality.
+const send_raid_command_at_start = process.argv[3] ? false : true;
+
 // Run the following listeners on a server that's actually connected...
 client.on("connected", (address, port) => {
     console.clear();
@@ -22,9 +28,11 @@ client.on("connected", (address, port) => {
 
     // start off by saying this...
     // It's important because it forces the Cabal message to come back around if chat has been dead.
-    setTimeout(() => {
-        client.say(Configs.CHANNEL, '!raid 1');
-    }, 1000);
+    if(send_raid_command_at_start) {
+        setTimeout(() => {
+            client.say(Configs.CHANNEL, '!raid 1');
+        }, 1000);
+    }
 });
 
 // Message Listeners

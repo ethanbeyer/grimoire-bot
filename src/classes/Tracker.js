@@ -20,8 +20,13 @@ export default class Tracker
         this.done = 0;
         this.result = 0;
         this.waiting_for_result = 0;
-        console.log(colors.green(`Winning Steak: ${this.win_streak}`));
-        console.log(colors.red(`Losing Streak: ${this.loss_streak}`));
+
+        console.log(
+            colors.gray('Wins / Losses: ')
+            + colors.green(`${this.win_count} (${this.win_streak})`)
+            + colors.gray(' / ')
+            + colors.red(`${this.loss_count} (${this.loss_streak})`)
+        );
     }
 
     win()
