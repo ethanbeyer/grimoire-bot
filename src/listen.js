@@ -1,10 +1,17 @@
-// Logging Improvements
-require('log-timestamp');
-
 // Imports
 import tmi from 'tmi.js';
 import colors from 'colors';
 import * as Configs from './configs';
+
+// Date Handling
+const dateFormat = require('dateFormat');
+
+// Log Prefixing
+require('log-prefix')(() => {
+    var now = new Date(),
+        str = dateFormat(now, 'yyyy-mm-dd HH:MM:ss');
+    return `[${str}]`;
+});
 
 // Connect to the Client
 const client = new tmi.Client(Configs.TMI_CONFIGS);

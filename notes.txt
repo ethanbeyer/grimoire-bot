@@ -1,0 +1,5 @@
+- all game logic and flow should be in raid.js
+
+- wager.js is just for determining values from inputs
+- tracker.js tracks where we are in the flow for this cycle (I do think this can be merged with wager.js at some point)
+- logger.js...logs.
